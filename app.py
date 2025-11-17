@@ -19,9 +19,11 @@ input_index = None
 output_index = None
 feature_cols = None
 
+
 interpreter = None
-input_index = None
-output_index = None
+input_index1 = None
+output_index1 = None
+model_block = None
 scaler_block = None
 encoders = None
 features_used = None
@@ -31,22 +33,36 @@ year_col = None
 df = None
 crops = None
 blocks = None
+
 def resources():
-    model_block = load_model("lstm_crop_yield_model.keras",compile=False)
-    scaler_block = joblib.load("scaler.pkl")
-    encoders = joblib.load("encoders.pkl")
-    features_used = joblib.load("features.pkl")
+    global model_block, scaler_block, encoders, features_used
+    global seq_length, target_col, year_col
+    global df, crops, blocks
 
-    with open("config.json", "r") as f:
-        config = json.load(f)
+    if model_block is None:
+        model_block = load_model("lstm_crop_yield_model.keras", compile=False)
 
-    seq_length = config["sequence_length"]
-    target_col = config["target_column"]
-    year_col = config["year_column"]
+    if scaler_block is None:
+        scaler_block = joblib.load("scaler.pkl")
 
-    df = pd.read_csv("cleaned_data.csv")
-    crops = sorted(df['Crop'].unique())
-    blocks = sorted(df['Block_name'].unique())
+    if encoders is None:
+        encoders = joblib.load("encoders.pkl")
+
+    if features_used is None:
+        features_used = joblib.load("features.pkl")
+
+    if seq_length is None or target_col is None or year_col is None:
+        with open("config.json", "r") as f:
+            config = json.load(f)
+        seq_length = config["sequence_length"]
+        target_col = config["target_column"]
+        year_col = config["year_column"]
+
+    if df is None:
+        df = pd.read_csv("cleaned_data.csv")
+        crops = sorted(df['Crop'].unique())
+        blocks = sorted(df['Block_name'].unique())
+
 
 @app.route('/')
 def home():
@@ -189,6 +205,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
