@@ -11,6 +11,26 @@ from tensorflow.keras.metrics import MeanSquaredError,MeanAbsoluteError
 
 
 app = Flask(__name__)
+model_interpreter = None
+scaler_district = None
+encoding_info = None
+df_all = None
+input_index = None
+output_index = None
+feature_cols = None
+
+interpreter = None
+input_index = None
+output_index = None
+scaler_block = None
+encoders = None
+features_used = None
+seq_length = None
+target_col = None
+year_col = None
+df = None
+crops = None
+blocks = None
 def resources()
     model_block = load_model("lstm_crop_yield_model.tflite",compile=False)
     scaler_block = joblib.load("scaler.pkl")
@@ -172,6 +192,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
