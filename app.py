@@ -117,23 +117,25 @@ SCALER_PATH = "feature_scaler1.save"
 ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
 def load_resources():
-    MODEL_PATH = "crop_yield_model.keras"
-    SCALER_PATH = "feature_scaler1.save"
-    ENCODING_PATH = "encoding_info.json"
-    DATA_PATH = "df_disrtict.csv"
-    model_district = load_model(MODEL_PATH, compile=False)
-    scaler_district = joblib.load(SCALER_PATH)
+    global model_district, scaler_district, feature_cols, df_all, crops, districts, years
+    if model_district is None:
+        model_district = load_model(MODEL_PATH, compile=False)
 
-    with open(ENCODING_PATH, "r") as f:
-        encoding_info = json.load(f)
+    if scaler_district is None:
+        scaler_district = joblib.load(SCALER_PATH)
 
-    feature_cols = encoding_info["feature_columns"]
+    if feature_cols is None:
+        with open(ENCODING_PATH, "r") as f:
+            encoding_info = json.load(f)
+        feature_cols = encoding_info["feature_columns"]
 
-# Load dataset
-    df_all = pd.read_csv(DATA_PATH)
-    crops = sorted(df_all["Crop"].unique())
-    districts = sorted(df_all["District"].unique())
-    years = sorted(df_all["Year"].unique()) + [max(df_all["Year"]) + 1]
+    if df_all is None:
+        df_all = pd.read_csv(DATA_PATH)
+        crops = sorted(df_all["Crop"].unique())
+        districts = sorted(df_all["District"].unique())
+        years = sorted(df_all["Year"].unique()) + [max(df_all["Year"]) + 1]
+
+    
 @app.route("/districtwise/predict", methods=["POST"])
 def predict_district():
     load_resources()
@@ -187,6 +189,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
