@@ -117,7 +117,7 @@ SCALER_PATH = "feature_scaler1.save"
 ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
 def load_resources():
-    global model_interpreter, scaler_district, encoding_info, df_all
+    global model_interpreter, scaler_district, encoding_info, df_all, feature_cols
     if model_interpreter is None:
         model_interpreter = load_model(MODEL_PATH, compile=False)
 
@@ -189,6 +189,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
