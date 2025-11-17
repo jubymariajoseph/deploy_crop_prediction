@@ -118,13 +118,13 @@ ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
 def load_resources():
     global model_district, scaler_district, feature_cols, df_all, crops, districts, years
-    if model_district is None:
-        model_district = load_model(MODEL_PATH, compile=False)
+    if model_interpreter is None:
+        model_interpreter = load_model(MODEL_PATH, compile=False)
 
     if scaler_district is None:
         scaler_district = joblib.load(SCALER_PATH)
 
-    if feature_cols is None:
+    if encoding_info is None:
         with open(ENCODING_PATH, "r") as f:
             encoding_info = json.load(f)
         feature_cols = encoding_info["feature_columns"]
@@ -189,6 +189,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
