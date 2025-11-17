@@ -9,23 +9,25 @@ import json
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import MeanSquaredError,MeanAbsoluteError
 
-model_block = load_model("lstm_crop_yield_model.keras",compile=False)
-scaler_block = joblib.load("scaler.pkl")
-encoders = joblib.load("encoders.pkl")
-features_used = joblib.load("features.pkl")
-
-with open("config.json", "r") as f:
-    config = json.load(f)
-
-seq_length = config["sequence_length"]
-target_col = config["target_column"]
-year_col = config["year_column"]
-
-df = pd.read_csv("cleaned_data.csv")
-crops = sorted(df['Crop'].unique())
-blocks = sorted(df['Block_name'].unique())
 
 app = Flask(__name__)
+def resources()
+    model_block = load_model("lstm_crop_yield_model.tflite",compile=False)
+    scaler_block = joblib.load("scaler.pkl")
+    encoders = joblib.load("encoders.pkl")
+    features_used = joblib.load("features.pkl")
+
+    with open("config.json", "r") as f:
+        config = json.load(f)
+
+    seq_length = config["sequence_length"]
+    target_col = config["target_column"]
+    year_col = config["year_column"]
+
+    df = pd.read_csv("cleaned_data.csv")
+    crops = sorted(df['Crop'].unique())
+    blocks = sorted(df['Block_name'].unique())
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -40,6 +42,7 @@ def dashboard():
     return render_template('dashboard.html')
 @app.route("/blockwise/predict", methods=["POST"])
 def predict():
+    resources()
     crop_name = request.form["Crop"]
     block_name = request.form["Block_name"]
     target_year = int(request.form["Year"])
@@ -93,21 +96,32 @@ MODEL_PATH = "crop_yield_model.keras"
 SCALER_PATH = "feature_scaler1.save"
 ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
-model_district = load_model(MODEL_PATH, compile=False)
-scaler_district = joblib.load(SCALER_PATH)
+def load_resources():
+    global model_interpreter, scaler_district, encoding_info, df_all, input_index, output_index, feature_cols
+    if model_interpreter is None:
+        # Load TFLite model
+        model_interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+        model_interpreter.allocate_tensors()
+        input_index = model_interpreter.get_input_details()[0]["index"]
+        output_index = model_interpreter.get_output_details()[0]["index"]
 
-with open(ENCODING_PATH, "r") as f:
-    encoding_info = json.load(f)
+    if scaler_district is None:
+        scaler_district = joblib.load(SCALER_PATH)
 
-feature_cols = encoding_info["feature_columns"]
+    if encoding_info is None:
+        with open(ENCODING_PATH, "r") as f:
+            encoding_info = json.load(f)
+        feature_cols = encoding_info["feature_columns"]
 
-# Load dataset
-df_all = pd.read_csv(DATA_PATH)
-crops = sorted(df_all["Crop"].unique())
-districts = sorted(df_all["District"].unique())
-years = sorted(df_all["Year"].unique()) + [max(df_all["Year"]) + 1]
+    if df_all is None:
+        df_all = pd.read_csv(DATA_PATH)
+
+    crops = sorted(df_all["Crop"].unique())
+    districts = sorted(df_all["District"].unique())
+    years = sorted(df_all["Year"].unique()) + [max(df_all["Year"]) + 1]
 @app.route("/districtwise/predict", methods=["POST"])
 def predict_district():
+    load_resources()
     crop_name = request.form["Crop"]
     district_name = request.form["District"]
     target_year = int(request.form["Year"])
@@ -158,6 +172,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
