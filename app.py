@@ -174,7 +174,7 @@ def predict_district():
     X_input = np.expand_dims(df_scaled, axis=0)
 
     # Predict
-    predicted_yield = model_district.predict(X_input)[0][0]
+    predicted_yield = model_interpreter.predict(X_input)[0][0]
     y_pred_original = np.expm1(predicted_yield)
 
     return jsonify({
@@ -189,6 +189,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
