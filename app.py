@@ -86,7 +86,7 @@ def predict():
     # Encode crop and block names
     crop_id = encoders["crop_encoder"].transform([crop_name])[0]
     block_id = encoders["block_encoder"].transform([block_name])[0]
-    seq_len = config["sequence_length"]  # e.g. 5
+    seq_len = seq_length  # e.g. 5
 
     # Filter dataset for the given crop & block
     df_crop = df[(df["Crop"] == crop_name) & (df["Block_name"] == block_name)].sort_values("Year")
@@ -205,6 +205,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
