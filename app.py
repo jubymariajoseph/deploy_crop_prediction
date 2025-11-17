@@ -31,7 +31,7 @@ year_col = None
 df = None
 crops = None
 blocks = None
-def resources()
+def resources():
     model_block = load_model("lstm_crop_yield_model.tflite",compile=False)
     scaler_block = joblib.load("scaler.pkl")
     encoders = joblib.load("encoders.pkl")
@@ -112,7 +112,7 @@ def predict():
         "predicted_yield": float(predicted_yield),
         "used_years": input_years
     })
-MODEL_PATH = "crop_yield_model.keras"
+MODEL_PATH = "crop_yield_model.tflite"
 SCALER_PATH = "feature_scaler1.save"
 ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
@@ -192,6 +192,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
