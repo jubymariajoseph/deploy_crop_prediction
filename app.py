@@ -8,7 +8,7 @@ import joblib
 import json
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import MeanSquaredError,MeanAbsoluteError
-import tensorflow as tf
+
 
 app = Flask(__name__)
 model_interpreter = None
@@ -187,6 +187,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
