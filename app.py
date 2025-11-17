@@ -117,25 +117,20 @@ SCALER_PATH = "feature_scaler1.save"
 ENCODING_PATH = "encoding_info.json"
 DATA_PATH = "df_disrtict.csv"
 def load_resources():
-    global model_interpreter, scaler_district, encoding_info, df_all, input_index, output_index, feature_cols
-    if model_interpreter is None:
-        # Load TFLite model
-        model_interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
-        model_interpreter.allocate_tensors()
-        input_index = model_interpreter.get_input_details()[0]["index"]
-        output_index = model_interpreter.get_output_details()[0]["index"]
+    MODEL_PATH = "crop_yield_model.keras"
+    SCALER_PATH = "feature_scaler1.save"
+    ENCODING_PATH = "encoding_info.json"
+    DATA_PATH = "df_disrtict.csv"
+    model_district = load_model(MODEL_PATH, compile=False)
+    scaler_district = joblib.load(SCALER_PATH)
 
-    if scaler_district is None:
-        scaler_district = joblib.load(SCALER_PATH)
+    with open(ENCODING_PATH, "r") as f:
+        encoding_info = json.load(f)
 
-    if encoding_info is None:
-        with open(ENCODING_PATH, "r") as f:
-            encoding_info = json.load(f)
-        feature_cols = encoding_info["feature_columns"]
+    feature_cols = encoding_info["feature_columns"]
 
-    if df_all is None:
-        df_all = pd.read_csv(DATA_PATH)
-
+# Load dataset
+    df_all = pd.read_csv(DATA_PATH)
     crops = sorted(df_all["Crop"].unique())
     districts = sorted(df_all["District"].unique())
     years = sorted(df_all["Year"].unique()) + [max(df_all["Year"]) + 1]
@@ -192,6 +187,7 @@ def predict_district():
 if __name__ == '__main__':
     # Start Flask app
     app.run()
+
 
 
 
